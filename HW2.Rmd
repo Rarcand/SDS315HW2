@@ -1,0 +1,262 @@
+---
+title: "Homework 2"
+author: "Ray Arcand"
+date: "2025-01-26"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Name: Ray Arcand EID: ra42693 Github: [Link Text](http://www.example.com)
+
+# Problem 1: Beauty, or not, in the classroom
+
+## Part A
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(ggplot2)
+profs <- read.csv("profs.csv")
+
+ggplot(profs, aes(x = eval)) + 
+  geom_histogram(binwidth = 0.2, fill = "skyblue", color = "black", alpha = 0.8) +
+  labs(
+    title = "Distribution of Course Evaluation Scores",
+    x = "Evaluation Score (1 to 5)",
+    y = "Frequency"
+  )
+
+
+```
+
+## Figure A: Distribution of Course Evaluation Scores
+
+The histogram displays the overall distribution of course evaluation scores across all instructors, ranging from 2 to 5. The distribution is left-skewed with a peak around 4.0-4.2, indicating that most instructors receive positive evaluations. However, there's a long tail extending towards lower scores, suggesting that while poor evaluations exist, they are relatively uncommon in the dataset.
+
+## Part B
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(profs, aes(x = native, y = eval, fill = native)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.7) + # Adjust alpha for clarity
+  labs(
+    title = "Distribution of Course Evaluation Scores by Native Language",
+    x = "Native English Speaker",
+    y = "Evaluation Score (1-5)",
+  ) +
+  scale_fill_manual(values = c("green", "yellow"), 
+                    labels = c("Non-Native Speaker", "Native Speaker")) +
+  theme_minimal() +
+  theme(legend.position = "none")
+ 
+```
+
+## Figure B: Distribution of Course Evaluation Scores by Native English Speaker
+
+The box plot shows the distribution of course evaluation scores comparing native and non-native English speakers. Native English speakers show slightly higher median scores (around 4.0) compared to non-native speakers (around 3.5), with both groups displaying similar spread in their evaluations. This suggests a potential language-based bias in course evaluations, though the overlap in distributions indicates the difference is modest.
+
+## Part C
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(profs, aes(x = eval, fill = gender)) +
+  geom_histogram(binwidth = 0.5, position = "dodge", alpha = 0.7, color = "black") +
+  facet_wrap(~ gender, nrow = 2) +
+  labs(
+    title = "Distribution of Course Evaluation Scores by Instructor Gender",
+    x = "Evaluation Score (1-5)",
+    y = "Count",
+    fill = "Instructor Gender"
+  ) +
+  scale_fill_manual(values = c("coral", "skyblue"), labels = c("Female", "Male")) +
+  theme_minimal()
+```
+
+## Figure C: Distribution of Course Evaluation Scores by Instructor Gender
+
+This histogram compares the distribution of course evaluation scores (1–5) between male and female instructors. The x-axis represents evaluation scores, while the y-axis represents the count of instructors receiving those scores. The top panel shows female instructors' scores (orange), and the bottom panel shows male instructors' scores (blue). While both distributions peak around scores of 4 and 5, male instructors have a slightly larger proportion of higher ratings. This pattern suggests a potential gender disparity in course evaluations, which may warrant further investigation.
+
+## Part D
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(profs, aes(x = beauty, y = eval)) +
+  geom_point() +
+  labs(
+    title = "Association Between Physical Attractiveness and Course Evaluations",
+    x = "Physical Attractiveness Score",
+    y = "Course Evaluation Score"
+  )
+
+```
+
+## Figure D: Relationship between physical attractiveness and course evaluations
+
+This scatter plot examines the relationship between instructors' physical attractiveness scores (x-axis) and their course evaluation scores (y-axis). Each point represents an instructor. While the data appears somewhat dispersed, there is a very slight pattern suggesting that higher attractiveness scores tend to correlate with higher course evaluations. However, the variation indicates that other factors likely contribute to course ratings beyond just physical appearance.
+
+# Problem 2: bike sharing
+
+## Plot A
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+
+
+bike <- read.csv("bikeshare.csv")
+
+bike %>%
+  group_by(hr) %>%
+  summarise(avg_total = mean(total)) %>%
+  ggplot(aes(x = hr, y = avg_total)) +
+  geom_line(color = "blue") +
+  labs(title = "Average Hourly Bike Rentals", x = "Hour of the Day", y = "Average Rentals")
+
+```
+
+## Figure E: Average Hourly Bike Rentals
+
+This line graph displays the average number of bike rentals per hour throughout the day. The x-axis represents the hour of the day (0-23), while the y-axis shows the average number of rentals. The data exhibits two prominent peaks: one around 8 AM and another, higher peak around 5 PM, indicating increased usage during typical commuting hours. Rentals remain relatively low in the early morning hours and gradually decline after the evening rush. This pattern suggests that bike usage is strongly influenced by work and school commuting schedules.
+
+## Plot B
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+bike %>%
+  group_by(hr, workingday) %>%
+  summarise(avg_total = mean(total)) %>%
+  ggplot(aes(x = hr, y = avg_total)) +
+  geom_line(color = "red") +
+  facet_wrap(~workingday) +
+  labs(title = "Average Hourly Bike Rentals by Working Day", x = "Hour of the Day", y = "Average Rentals")
+
+```
+
+## Figure F: Average Hourly Bike Rentals by Working Day
+
+This faceted line graph displays the average number of bike rentals per hour, separated by whether it is a working day (1) or not (0). On non-working days (left panel), rentals increase gradually throughout the morning, peaking around midday, and then slowly decline into the evening. On working days (right panel), rentals show two sharp peaks: one around 8 AM and another, higher peak around 5 PM, indicating heavy usage during commuting hours. This contrast suggests that bike usage patterns are strongly influenced by commuting behavior on workdays, while leisure-oriented usage dominates on weekends.
+
+## Plot C
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+bike %>%
+  filter(hr == 9) %>%
+  group_by(weathersit, workingday) %>%
+  summarise(avg_total = mean(total)) %>%
+  ggplot(aes(x = factor(weathersit), y = avg_total, fill = factor(weathersit))) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~workingday) +
+  labs(title = "Average 9 AM Bike Rentals by Weather Situation", x = "Weather Situation", y = "Average Rentals")
+```
+
+## Figure G: Average 9AM Bike Rentals by Weather Situation
+
+This faceted bar plot displays the average number of bike rentals at 9 AM, categorized by weather situation and split between non-working days (left panel) and working days (right panel). The x-axis represents different weather conditions, with 1 indicating clear or partly cloudy weather, 2 representing misty or cloudy conditions, and 3 corresponding to light snow or rain. The y-axis measures the average number of rentals. The color legend differentiates weather conditions, with red for clear weather, green for misty conditions, and blue for light precipitation. The plot reveals that ridership is highest in clear weather (category 1) and decreases as weather conditions worsen. This trend is consistent on both working and non-working days, though overall ridership is higher on working days. A key takeaway is that inclement weather significantly reduces bike rentals, emphasizing the impact of weather conditions on commuter behavior.
+
+# Problem 3 - Capital Metro UT Ridership
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+capmetro_UT <- read.csv("capmetro_UT.csv")
+capmetro_UT <- capmetro_UT %>%
+  mutate(
+    day_of_week = factor(day_of_week, levels = c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")),
+    month = factor(month, levels = c("Sep", "Oct", "Nov"))
+  )
+
+boarding_summary <- capmetro_UT %>%
+  group_by(day_of_week, hour_of_day, month) %>%
+  summarise(avg_boardings = mean(boarding, na.rm = TRUE))
+
+ggplot(boarding_summary, aes(x = hour_of_day, y = avg_boardings, color = month)) +
+  geom_line() +
+  facet_wrap(~ day_of_week) +
+  labs(
+    title = "Average Boardings by Hour of Day, Day of Week, and Month",
+    x = "Hour of the Day",
+    y = "Average Boardings",
+    caption = str_wrap("Boardings are relatively stable across weekends, with peak times around 3:30 PM during weekdays. 
+               Mondays in September have lower boardings by about 30+ average, likely due to labor day or schedule adjustments. 
+               Similarly, Weds/Thurs/Fri in November show lower boardings by about 25 average, possibly due to Thanksgiving break."),
+    width = 80
+  ) +
+  theme_minimal()
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+ggplot(capmetro_UT, aes(x = temperature, y = boarding, color = weekend)) +
+  geom_point() +
+  facet_wrap(~ hour_of_day) +
+  labs(
+    title = "Boardings vs Temperature, Faceted by Hour of Day",
+    x = "Temperature (°F)",
+    y = "Boardings",
+    caption = str_wrap(
+      "This figure shows the relationship between temperature (x-axis) and boardings (y-axis) for UT students using Capital Metro buses. 
+      When controlling for hour of day and weekend status, temperature does not have a strong effect on boardings, which cluster between 100 and 200.",
+      width = 80
+    )
+  ) +
+  theme_minimal()
+
+```
+
+# Problem 4 - Wrangling the Billboard Top 100
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+billboard <- read.csv("billboard.csv")
+
+top_songs <- billboard %>%
+  group_by(performer, song) %>%
+  summarize(count = n(), .groups = "drop") %>%
+  arrange(desc(count)) %>%
+  slice_head(n = 10)
+
+top_songs
+```
+
+## Figure J: Table of the 10 songs with the longest duration on the Billboard Top 100
+
+This table shows the 10 songs with the longest duration on the Billboard Top 100 since 1958, ranked by total weeks spent on the chart, with Imagine Dragons' Radioactive with the most weeks (87) spent on the Billboard Top 100.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+diversity <- billboard %>%
+  filter(year > 1958, year < 2021) %>%
+  group_by(year) %>%
+  summarize(unique_songs = n_distinct(song))
+
+ggplot(diversity, aes(x = year, y = unique_songs)) +
+  geom_line(color = "blue") +
+  labs(title = "Musical Diversity in Billboard Top 100 (1959-2020)",
+       x = "Year",
+       y = "Unique Songs on Chart")
+
+```
+
+## Figure K: Musical Diversity in Billboard Top 100 (1959 - 2020)
+
+Musical diversity in the Billboard Top 100 from 1959-2020, measured by the number of unique songs appearing on the chart each year. The graph reveals several distinct trends: a peak in diversity during the mid-1960s with nearly 800 unique songs per year, followed by a steady decline through the 1970s and 1980s reaching a low point around 2000 with fewer than 400 unique songs annually. However, there's been a significant resurgence in musical diversity since 2000, with a dramatic spike in recent years reaching levels not seen since the 1960s. This pattern suggests a shift from the concentrated music industry of the late 20th century toward greater diversity in the streaming era.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ten_week_hits <- billboard %>%
+  group_by(performer, song) %>%
+  summarize(total_weeks = n(), .groups = "drop") %>%
+  filter(total_weeks >= 10) %>%
+  group_by(performer) %>%
+  summarize(hit_count = n()) %>%
+  filter(hit_count >= 30) %>%
+  arrange(desc(hit_count))
+
+ggplot(ten_week_hits, aes(x = reorder(performer, hit_count), y = hit_count)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Artists with Most 'Ten-Week Hits'",
+       x = "Artist",
+       y = "Number of Songs Lasting 10+ Weeks")
+
+```
+
+## Figure L: Artistis with Most `Ten-Week Hits`
+
+The distribution shows the artists with 30 or more "ten-week hits" (songs that spent at least 10 weeks on the Billboard Top 100) from 1958-2021. Elton John leads with over 50 such hits, followed closely by Madonna and Kenny Chesney with approximately 45 hits each. The graph shows a mix of artists across different genres and eras, from classic rock (The Rolling Stones) to contemporary pop (Taylor Swift) and country (Tim McGraw), demonstrating sustained commercial success across multiple decades and musical styles.
