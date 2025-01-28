@@ -38,7 +38,7 @@ The histogram displays the overall distribution of course evaluation scores acro
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(profs, aes(x = native, y = eval, fill = native)) +
-  geom_boxplot(outlier.shape = NA, alpha = 0.7) + # Adjust alpha for clarity
+  geom_boxplot(outlier.shape = NA, alpha = 0.7) +
   labs(
     title = "Distribution of Course Evaluation Scores by Native Language",
     x = "Native English Speaker",
